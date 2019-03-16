@@ -1,0 +1,315 @@
+<import src="../template/activity/act_comment.wxml" />
+<import src="../template/activity/applyed.wxml" />
+<import src="../template/toasts/toasts.wxml" />
+<loading hidden="{{loading}}">页面加载中...</loading>
+<!--评论输入弹窗--> 
+<view class="weui-toptips weui-toptips_warn" wx:if="{{showTopTips}}">{{TopTips}}</view>
+<view class="dialog" wx:if="{{showCommentDialog}}" bindtap="hideCommentDialog"></view>
+<view class="dialog_content" wx:if="{{showCommentDialog}}">
+  <input bindinput="commentText" placeholder="{{commentInputHolder}}" focus="true" class="dialog-content-input" />
+  <view>
+    <button catchtap="publishComment" class="dialog-content-btn">评论</button>
+  </view>
+</view>
+<!--pages/detail/detail.wxml-->  
+<scroll-view scroll-y="true" class="all_scr" style="padding-bottom:112rpx;">
+  <!--活动封面--> 
+
+  <view class="detail_con">
+    <!-- 活动名称生成海报 -->   
+    <view  class="des_txt detail_msg" >
+      <text>{{listTitle}}</text>
+      <!-- <view class="detail_row_right"></view> -->
+      <!-- <canvas canvas-id="shareImg" style="width:545px;height:771px"></canvas>
+      
+      <view hidden='{{hidden}}' class='preview'>
+        <image src='{{prurl}}' mode='widthFix'></image>
+        <button type='primary' size='mini' bindtap='save'>保存图片</button>
+      </view>
+      <form bindsubmit="share" report-submit="{{true}}" wx:if="{{allHide || join == 3 || issharer == 3}}">
+        <button formType="submit"  class='btncss'>
+              <button formType="submit"  class='btncss'>
+                  <view class='share-btn' >海报</view>
+        </button>
+        </button>
+      </form> -->
+      <canvasdrawer painting="{{painting}}" class="canvasdrawer" bind:getImage="eventGetImage"/>
+      <view hidden='{{hidden}}' class='preview'>
+        <image src="{{shareImage}}"  mode='widthFix'></image>
+
+        
+        <button bind:tap="eventSave">保存到本地</button>
+
+        
+      </view>
+       
+      <view wx:if="{{allHide || join == 3 || issharer == 3}}" >
+        <form bindsubmit="eventDraw" report-submit="{{true}}">
+            <button formType="submit"  class='btncss'>
+                <view class='sharebtn' bindtap='testit'>海报</view>
+            </button>
+        </form>
+      </view>
+
+    </view>
+     <!-- 无论当前用户是不是分享者发布者都显示转发按钮 -->
+    <view   class="des_txt detail_msg">
+      <text bindtap='subject'>发起者: {{publisherName}}</text> 
+      <view wx:if="{{!allHide }}" >
+        <form bindsubmit="sharebtn" report-submit="{{true}}">
+            <button formType="submit" open-type="share" class='btncss'>
+                <view class='share-btn' bindtap='test'>转发</view>
+            </button>
+        </form>          
+      </view>  
+    </view>
+
+    
+
+<view class="des_txt detail_txt">
+<text>类型 {{acttypename}}</text>
+<view class="detail_lineh"></view>
+
+    
+
+<view class="detail_input">
+<view class='1'>
+<text>{{price}}</text>
+<view class="detail_lineh"></view>
+</view>
+</view>
+
+<view class="detail_input">
+<view class='1'>
+<text>{{agelimit}}</text>
+<view class="detail_lineh"></view>
+</view>
+</view>
+
+<view class="detail_input">
+<view class='1'>
+<text>{{rice}}</text>
+<view class="detail_lineh"></view>
+</view>
+</view>
+
+<view class="detail_input">
+<view class='1'>
+<text>{{listContent}}</text>
+<view class="detail_lineh"></view>
+</view>
+</view>
+
+    <view class="detail_input">
+      <!--活动人数限制-->
+      <text class="des_txt detail_txt">人数</text>
+      <view class="detail_row_right">
+        <view wx:if="{{peoplenum > 0}}">
+          <text>{{peoplenum}} 人</text>
+        </view>
+        <view wx:if="{{peoplenum < 0}}">
+          <text>不限</text>
+        </view>
+      </view>
+      <view class="detail_lineh"></view>
+    </view>
+
+    <!--活动状态-->
+    <view class="detail_input">
+      <text class="des_txt detail_txt">活动状态</text>
+      <view class="detail_row_right">
+        <text class='statustag_{{actstatus}}'>{{statusname}}</text>
+      </view>
+      <view class="detail_lineh"></view>
+    </view>
+
+  </view>
+
+
+
+<!-- 
+    <view class= "calbutton">
+    <button type='primary' bindtap='joincal'>加入日程表</button>
+    <button type='primary' bindtap='delcal'>移除日程表</button>
+    </view> -->
+
+    <view wx:if="{{join == 3 || issharer == 3}}" class="xiangqing">
+      <view class="leaderButton">
+        <button type="primary" bindtap='pass'>人员审核</button>
+        <button type="primary" bindtap='jihezhuangtai'>集合状态</button>
+        <button type="primary" bindtap='manager'>人员管理</button>
+      </view>
+    </view>
+
+    <!--活动内容-->
+    <view wx:if="{{status==0}}">
+      <view class="actDetail" style="margin-top:10rpx;">
+
+        <!--评论title-->
+        <view class="comment_title paddingLR">
+          <text class="comment_text">评论</text>
+          <text bindtap="showCommentDialog" class='comment_button' style="color:#118fff">我要评论</text>
+        </view>
+        <view wx:if="{{!(commNum > 0)}}" class="comment-footer-txt">暂无评论</view>
+
+        <!--评论列表-->
+        <view wx:if="{{ commNum > 0}}" wx:for="{{commentList}}" wx:key="comment">
+          <template is="comment" data="{{item}}" />
+        </view>
+
+        <view class="comment-footer-txt" wx:if="{{ commNum > 0}}">---无更多评论---</view>
+
+
+      </view>
+    </view>
+
+  </view>
+</scroll-view>
+
+<!--我要加入-->
+<view class="bottom">
+  <view class="bottom-beta-box">
+    
+    <!-- <view>分享</view> -->
+    
+    <form bindsubmit="click_join" data-join="{{join}}" report-submit="true">
+      <button class="textarea1_case_sign {{join == 0?'un-has':'has'}}" form-type="submit">
+        <view wx:if="{{join == 3}}">改变状态</view>  
+        <view wx:if="{{join != 3}}">
+          <view wx:if="{{peoplenum < 0}}">
+            <view wx:if="{{join == 0}}">现在加入</view> 
+            <view wx:elif="{{join == 1}}">退出活动</view>
+          </view>
+          <view wx:if="{{peoplenum > 0}}">
+            <view wx:if="{{peoplenum-joinnumber > 0 && join == 0}}">现在加入</view>
+            <view wx:elif="{{peoplenum-joinnumber > 0 && join == 1}}">退出活动</view>
+            <view wx:else="{{peoplenum-joinnumber <= 0 }}">人数已满</view>
+          </view>
+        </view>
+      </button>
+    </form>
+
+    <form bindtap="click_favo" data-favo="{{favo}}" report-submit="true">
+      <button class="textarea1_case_sign {{favo == 0?'un-has':'has'}}" form-type="submit">
+        <view wx:if="{{favo == 0}}">立即收藏</view>
+        <view wx:if="{{favo == 1}}">取消收藏</view>
+        <view wx:if="{{favo == 3}}">
+          <view wx:if="{{actstatus != 2 && isShow == 1}}">撤离首页</view>
+          <view wx:if="{{actstatus != 2 && isShow == 0}}">公开发起</view>
+          <view wx:if="{{actstatus == 2}}" style="opacity:0.6">公开发起</view>
+        </view>
+      </button>
+    </form>
+
+    <view wx:if="{{join == 1 || join == 3}}">
+      <button class="textarea1_case_sign2"></button>
+      <template is="actQrCode" data="{{qrcodeHe,qrcode}}" />
+      <import src="../../components/button/button.wxml" />
+      <template is="button" data="{{ ...$wux.button.br }}" />
+    </view>
+  </view>
+</view>
+<!--//加入活动弹窗  -->
+<view class=" {{ showDialog ? 'dialog_show' : '' }}">
+  <view class="dialog_mask" />
+  <view class="dialog_container">
+    <!--  //此区域为加入视图  -->
+
+
+    <view class="addForm">
+      <form bindsubmit="joinSubmit" class="white" report-submit="true">
+        <button  wx:if="{{ishere}}" class= "loginbt" open-type="getUserInfo"lang="zh_CN" bindgetuserinfo="onGotUserInfo" type="primary">一键登陆</button>
+        <view wx:if="{{islogin}}">
+
+        
+        <input class="name" value="{{realname}}" name="realname" type="text" placeholder="请在这里填写名字" placeholder-class="place" maxlength="9" />
+        <input class="name" value="{{realnumber}}" name="realnumber" type="text" placeholder="请在这里填写电话" placeholder-class="place" maxlength="13" />
+        <input class="name" value="{{realinfo}}" name="realinfo" type="text" placeholder="请在这里填写其他信息" placeholder-class="place" maxlength="30" /> 
+
+    <!-- <text>判断当前用户是否是认证粉丝 不是则跳转到认证页面 是则可以报名</text> -->
+    <view class='hengxiangpailie'>
+    
+      <view class='photo1'>
+        <text class='titlesize'>照片1</text>
+        <view class="issues-photo-item add-photo" bindtap="uploadPic" wx-if="{{!isSrc}}"></view>
+        <view wx:if="{{isSrc}}" class="image_box">
+          <view class="picPre"> 
+            <image src="{{myphoto}}" mode="aspectFit"></image>
+            <view bindtap="clearPic"></view>
+          </view>
+        </view>
+      </view>
+
+      <view class='photo2'>
+        <text class='titlesize'>照片2</text>
+        <view class="issues-photo-item add-photo" bindtap="uploadmysecurityPic" wx-if="{{!isSrcc}}"> </view>
+        <view wx:if="{{isSrcc}}" class="image_box">
+          <view class="picPre"> 
+            <image src="{{mysecurity}}" mode="aspectFit"></image>
+            <view bindtap="clearmysecurityPic"></view>
+          </view>
+        </view>
+      </view>
+        
+      <view class='photo3'>
+        <text class='titlesize'>照片3</text>
+        <view class="issues-photo-item add-photo" bindtap="uploadmycardPic" wx-if="{{!isSrccc}}"> </view>
+        <view wx:if="{{isSrccc}}" class="image_box">
+          <view class="picPre">
+            <image src="{{mycard}}" mode="aspectFit"></image>
+            <view bindtap="clearmycardPic"></view>
+          </view>
+        </view>
+      </view> 
+
+    </view>
+
+        <view class="formButton">
+
+          <button class="textarea1_case_btn" type="primary" form-type="submit">加入</button>
+          <button class="textarea1_case_btn" type="warn" bindtap="click_join">取消</button>
+        </view>
+
+      </view>
+
+      </form>
+    </view>
+
+
+  </view>
+</view>
+<!--修改联系信息 -->
+<view class=" {{ showUpdDialog ? 'dialog_show' : '' }}">
+  <view class="dialog_mask" />
+  <view class="dialog_container">
+
+  </view>
+</view>
+
+<!--改变活动状态 -->
+<view class=" {{ showStuDialog ? 'dialog_show' : '' }}">
+  <view class="dialog_mask" />
+  <view class="dialog_container">
+    <!--  //此区域为加入视图  -->
+    <view class="addForm2">
+      <form bindsubmit="stuSubmit" class="white" report-submit="true">
+        <view class="todoName">
+          <view class="weui-cell weui-cell_select">
+            <view class="weui-cell__bd weui-cell__bd_in-select-before">
+              <view class="weui-input">发起状态</view>
+            </view>
+            <view class="weui-cell__hd" style="width: 120px">
+              <picker bindchange="changeStatus" value="{{statusIndex}}" range="{{actStatusArray}}">
+                <view class="change-select">{{actStatusArray[statusIndex]}}</view>
+              </picker>
+            </view>
+          </view>
+        </view>
+        <view class="formButton">
+          <button class="textarea1_case_btn" type="primary" form-type="submit">确定</button>
+          <button class="textarea1_case_btn" type="warn" bindtap="closeChange">取消</button>
+        </view>
+      </form>
+    </view>
+  </view>
+</view>
